@@ -18,18 +18,23 @@ namespace grimtol_checkpoint.Models
 
     public bool Exit(string direction) => this.Exits.ContainsKey(direction);
 
-    public void Enter()
+    public void PrintDescription()
     {
       Console.WriteLine(this.Description);
-
-      string options = "Your exit options include: ";
-      foreach (KeyValuePair<string, Room> direction in this.Exits)
-      {
-        options += "'" + direction.Key + "' ";
-      }
-
-      Console.WriteLine(options);
     }
+
+    // public void Enter()
+    // {
+    //   Console.WriteLine(this.Description);
+
+    //   string options = "Your exit options include: ";
+    //   foreach (KeyValuePair<string, Room> direction in this.Exits)
+    //   {
+    //     options += "'" + direction.Key + "' ";
+    //   }
+
+    //   Console.WriteLine(options);
+    // }
 
   }
 }

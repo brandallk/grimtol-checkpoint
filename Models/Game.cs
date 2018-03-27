@@ -31,7 +31,7 @@ namespace grimtol_checkpoint.Models
 
     public void PrintOptions()
     {
-      string options = "";
+      string options = "'help'   'quit'   'look'   ";
       foreach (KeyValuePair<string, Room> exitDirection in this.CurrentRoom.Exits)
       {
         options += "'Go " + exitDirection.Key + "'   ";
@@ -49,8 +49,6 @@ namespace grimtol_checkpoint.Models
 
     public void TakeTurn()
     {
-      this.CurrentRoom.Enter();
-
       bool validOption = false;
       while (!validOption)
       {
@@ -78,6 +76,10 @@ namespace grimtol_checkpoint.Models
           {
             Console.WriteLine("That option is invalid. Try again.");
           }
+        }
+        else if (action.ToLower() == "look")
+        {
+          this.CurrentRoom.PrintDescription();
         }
         else if (action.Length >= 6 && action.ToLower().Substring(0, 5) == "take ")
         {
