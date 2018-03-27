@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using grimtol_checkpoint.Interfaces;
+using grimtol_checkpoint.Enums;
 
 namespace grimtol_checkpoint.Models
 {
@@ -8,6 +10,73 @@ namespace grimtol_checkpoint.Models
     private Dictionary<string, Room> Rooms;
     public Room CurrentRoom { get; set; }
     public Player CurrentPlayer { get; set; }
+
+    public void Reset()
+    {
+
+    }
+
+    public void Setup()
+    {
+      this.Rooms = SetupRooms();
+      this.CurrentRoom = this.Rooms["Hallway"];
+      Console.Clear();
+      Console.WriteLine("Welcome to the game!");
+    }
+
+    public void UseItem(string itemName)
+    {
+
+    }
+
+    public void PrintOptions()
+    {
+      string options = "";
+      foreach (KeyValuePair<string, Room> exitDirection in this.CurrentRoom.Exits)
+      {
+        options += "'Go " + exitDirection.Key + "'   ";
+      }
+      foreach (Item item in this.CurrentRoom.Items)
+      {
+        options += "'Take " + item.Name + "'   ";
+      }
+      foreach (Item item in this.CurrentPlayer.Inventory)
+      {
+        options += "'Use " + item.Name + "'   ";
+      }
+      Console.WriteLine(options);
+    }
+
+    public void TakeTurn()
+    {
+      this.CurrentRoom.Enter();
+
+      bool validOption = false;
+      while (!validOption)
+      {
+        Console.WriteLine("What do you do now?");
+
+        string action = Console.ReadLine();
+        if (action.ToLower() == "help")
+        {
+          this.PrintOptions();
+        }
+        else if (action.ToLower() == "quit")
+        {
+          validOption = true;
+          this.CurrentPlayer.Status = PlayerStatus.quit;
+        }
+        else if (action.ToLower().Substring(0, 3) == "go ")
+        {
+          string direction = action.ToLower().Substring(3);
+          if (this.CurrentRoom.Exit(direction))
+          {
+            validOption = true;
+            this.CurrentRoom = this.CurrentRoom.Exits[direction];
+          }
+        }
+      }
+    }
 
     public Dictionary<string, Room> SetupRooms()
     {
@@ -120,19 +189,5 @@ namespace grimtol_checkpoint.Models
 
     }
 
-    public void Reset()
-    {
-
-    }
-
-    public void Setup()
-    {
-
-    }
-
-    public void UseItem(string itemName)
-    {
-
-    }
   }
 }
