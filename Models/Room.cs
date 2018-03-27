@@ -16,18 +16,7 @@ namespace grimtol_checkpoint.Models
 
     }
 
-    public bool Exit(string direction)
-    {
-      if (this.Exits.ContainsKey(direction))
-      {
-        return true;
-      }
-      else
-      {
-        Console.WriteLine("Invalid exit");
-        return false;
-      }
-    }
+    public bool Exit(string direction) => this.Exits.ContainsKey(direction);
 
     public void Enter()
     {

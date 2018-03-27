@@ -66,7 +66,7 @@ namespace grimtol_checkpoint.Models
           validOption = true;
           this.CurrentPlayer.Status = PlayerStatus.quit;
         }
-        else if (action.ToLower().Substring(0, 3) == "go ")
+        else if (action.Length >= 4 && action.ToLower().Substring(0, 3) == "go ")
         {
           string direction = action.ToLower().Substring(3);
           if (this.CurrentRoom.Exit(direction))
@@ -74,6 +74,28 @@ namespace grimtol_checkpoint.Models
             validOption = true;
             this.CurrentRoom = this.CurrentRoom.Exits[direction];
           }
+          else
+          {
+            Console.WriteLine("That option is invalid. Try again.");
+          }
+        }
+        else if (action.Length >= 6 && action.ToLower().Substring(0, 5) == "take ")
+        {
+          string itemName = action.ToLower().Substring(5);
+          Item item = this.CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
+          if (item != null)
+          {
+            validOption = true;
+            this.CurrentPlayer.Take(item);
+          }
+          else
+          {
+            Console.WriteLine("That option is invalid. Try again.");
+          }
+        }
+        else
+        {
+          Console.WriteLine("That option is invalid. Try again.");
         }
       }
     }
@@ -102,7 +124,10 @@ namespace grimtol_checkpoint.Models
 
       barracks.Name = "Barracks";
       barracks.Description = "You see a room with several sleeping guards, The room smells of sweaty men. The bed closest to you is empty and there are several uniforms tossed about.";
-      barracks.Items = new List<Item>();
+      barracks.Items = new List<Item>()
+      {
+        new Item() { Name = "Guard Uniform", Description = "Guard Uniform" }
+      };
       barracks.Exits = new Dictionary<string, Room>()
       {
         {"south", hallway}
@@ -110,7 +135,12 @@ namespace grimtol_checkpoint.Models
 
       captainsQuarters.Name = "Captain's Quarters";
       captainsQuarters.Description = "As you approach the captains Quarters you swallow hard and notice your lips are dry, Stepping into the room you see a few small tables and maps of the countryside sprawled out.";
-      captainsQuarters.Items = new List<Item>();
+      captainsQuarters.Items = new List<Item>()
+      {
+        new Item() { Name = "Key", Description = "Key" },
+        new Item() { Name = "Note", Description = "Note" },
+        new Item() { Name = "Vial", Description = "Vial" }
+      };
       captainsQuarters.Exits = new Dictionary<string, Room>()
       {
         {"north", hallway},
@@ -132,7 +162,10 @@ namespace grimtol_checkpoint.Models
 
       guardRoom.Name = "Guard Room";
       guardRoom.Description = "Pushing open the door of the guard room you look around and notice the room is empty, There are a few small tools in the corner and a chair propped against the wall near the that likely leads to the dungeon.";
-      guardRoom.Items = new List<Item>();
+      guardRoom.Items = new List<Item>()
+      {
+        new Item() { Name = "Hammer", Description = "Hammer" }
+      };
       guardRoom.Exits = new Dictionary<string, Room>()
       {
         {"west", captainsQuarters},
@@ -142,7 +175,10 @@ namespace grimtol_checkpoint.Models
 
       dungeon.Name = "Dungeon";
       dungeon.Description = "As you descend the stairs to the dungeon you notice a harsh chill to the air. Landing a the base of the stairs you see what the remains of a previous prisoner.";
-      dungeon.Items = new List<Item>();
+      dungeon.Items = new List<Item>()
+      {
+        new Item() { Name = "Broken Lock", Description = "Broken Lock" }
+      };
       dungeon.Exits = new Dictionary<string, Room>()
       {
         {"south", guardRoom}
@@ -150,7 +186,10 @@ namespace grimtol_checkpoint.Models
 
       squireTower.Name = "Squire Tower";
       squireTower.Description = "As you finish climbing the stairs to the squire tower you see a messenger nestled in his bed. His messenger overcoat is hanging from his bed post.";
-      squireTower.Items = new List<Item>();
+      squireTower.Items = new List<Item>()
+      {
+        new Item() { Name = "Messenger Overcoat", Description = "Messenger Overcoat" }
+      };
       squireTower.Exits = new Dictionary<string, Room>()
       {
         {"west, turn south", castleCourtyard},
@@ -159,7 +198,10 @@ namespace grimtol_checkpoint.Models
 
       warRoom.Name = "War Room";
       warRoom.Description = "Steping into the war room you see several maps spread across tables. On the maps many of the villages have been marked for purification. You also notice several dishes of prepared food to the side perhaps the war council will be meeting soon.";
-      warRoom.Items = new List<Item>();
+      warRoom.Items = new List<Item>()
+      {
+        new Item() { Name = "Window", Description = "Window" }
+      };
       warRoom.Exits = new Dictionary<string, Room>()
       {
         {"south", squireTower}
