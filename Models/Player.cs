@@ -21,6 +21,23 @@ namespace grimtol_checkpoint.Models
 
     public void Take(Item item) => this.Inventory.Add(item);
 
+    public void PrintInventory()
+    {
+      if (this.Inventory.Count > 0)
+      {
+        string inventory = "";
+        foreach (Item item in this.Inventory)
+        {
+          inventory += item.Name + "   ";
+        }
+        Console.WriteLine($"Your inventory: {inventory}");
+      }
+      else
+      {
+        Console.WriteLine("No items in your inventory");
+      }
+    }
+
   }
 
 }

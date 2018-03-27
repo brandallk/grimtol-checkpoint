@@ -31,18 +31,18 @@ namespace grimtol_checkpoint.Models
 
     public void PrintOptions()
     {
-      string options = "'help'   'quit'   'look'   ";
+      string options = "'help'   'quit'   'look'   'inventory'   ";
       foreach (KeyValuePair<string, Room> exitDirection in this.CurrentRoom.Exits)
       {
-        options += "'Go " + exitDirection.Key + "'   ";
+        options += "'go " + exitDirection.Key + "'   ";
       }
       foreach (Item item in this.CurrentRoom.Items)
       {
-        options += "'Take " + item.Name + "'   ";
+        options += "'take " + item.Name + "'   ";
       }
       foreach (Item item in this.CurrentPlayer.Inventory)
       {
-        options += "'Use " + item.Name + "'   ";
+        options += "'use " + item.Name + "'   ";
       }
       Console.WriteLine(options);
     }
@@ -63,6 +63,11 @@ namespace grimtol_checkpoint.Models
         {
           validOption = true;
           this.CurrentPlayer.Status = PlayerStatus.quit;
+        }
+        else if (action.ToLower() == "inventory")
+        {
+          validOption = true;
+          this.CurrentPlayer.PrintInventory();
         }
         else if (action.Length >= 4 && action.ToLower().Substring(0, 3) == "go ")
         {

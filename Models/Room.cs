@@ -23,18 +23,5 @@ namespace grimtol_checkpoint.Models
       Console.WriteLine(this.Description);
     }
 
-    // public void Enter()
-    // {
-    //   Console.WriteLine(this.Description);
-
-    //   string options = "Your exit options include: ";
-    //   foreach (KeyValuePair<string, Room> direction in this.Exits)
-    //   {
-    //     options += "'" + direction.Key + "' ";
-    //   }
-
-    //   Console.WriteLine(options);
-    // }
-
   }
 }
