@@ -29,20 +29,18 @@ namespace grimtol_checkpoint.Models
       Item foundItem = this.CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
       Item inventoryItem = this.CurrentPlayer.Inventory.Find(invItem => invItem.Name.ToLower() == itemName);
 
-      // DEBUG --
-      Console.WriteLine($"foundItem: {foundItem.Name}");
-      Console.WriteLine($"inventoryItem: {inventoryItem.Name}");
-
+      // To use an item found in a room (without taking it first), it must be takeable and it must be useable in the current room
       if (foundItem != null && foundItem.Useable)
       {
-        if (!foundItem.Takeable && (foundItem.UseLocation == null || foundItem.UseLocation == this.CurrentRoom)) // To use an item found in a room (without taking it first), it must be takeable and it must be useable in the current room
+        if (!foundItem.Takeable && (foundItem.UseLocation == null || foundItem.UseLocation == this.CurrentRoom))
         {
           Console.WriteLine(foundItem.UseDescription);
           this.CurrentPlayer.Status = foundItem.UseEffect;
           foundItem.InUse = true;
         }
       }
-      else if (inventoryItem != null) // To use an inventory item, it must have already been taken (because that's how it got added to the inventory), and it must be useable in the current room
+      // To use an inventory item, it must have already been taken (because that's how it got added to the inventory), and it must be useable in the current room
+      else if (inventoryItem != null)
       {
         if (foundItem.UseLocation == null || foundItem.UseLocation == this.CurrentRoom)
         {
@@ -50,12 +48,6 @@ namespace grimtol_checkpoint.Models
           this.CurrentPlayer.Status = inventoryItem.UseEffect;
           foundItem.InUse = true;
         }
-      }
-
-      // DEBUG --
-      foreach (Item item in this.CurrentPlayer.Inventory)
-      {
-        Console.WriteLine($"you have: {item.Name} and its InUse is {item.InUse}");
       }
     }
 
@@ -90,7 +82,7 @@ namespace grimtol_checkpoint.Models
       {
         foreach (Event evt in this.CurrentRoom.Events)
         {
-          if (evt.ShouldFire(this))
+          if (evt.ShouldFire(this.CurrentPlayer))
           {
             Console.WriteLine(evt.Description);
             this.CurrentPlayer.Status = evt.Effect;
