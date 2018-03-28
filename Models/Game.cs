@@ -90,15 +90,8 @@ namespace grimtol_checkpoint.Models
       {
         foreach (Event evt in this.CurrentRoom.Events)
         {
-          // IN PROGRESS: WHY IS THE TRIGGER CONDITION APPARENTLY TRUE AND FIRING WHEN ENTER COURTYARD WITH UNIFORM IN INVENTORY AND INUSE?!!
-          if (evt.TriggerCondition)
+          if (evt.ShouldFire(this))
           {
-            // DEBUG --
-            bool cond1 = this.CurrentPlayer.Inventory.Find(item => item.Name == "Guard Uniform") != null;
-            bool cond2 = this.CurrentPlayer.Inventory.Find(item => item.Name == "Guard Uniform").InUse;
-            Console.WriteLine($"this.CurrentPlayer.Inventory.Find(item => item.Name == Guard Uniform) != null   is   {cond1}");
-            Console.WriteLine($"this.CurrentPlayer.Inventory.Find(item => item.Name == Guard Uniform).InUse   is   {cond2}");
-
             Console.WriteLine(evt.Description);
             this.CurrentPlayer.Status = evt.Effect;
           }
@@ -237,8 +230,8 @@ namespace grimtol_checkpoint.Models
       castleCourtyard.Items = new List<Item>();
       castleCourtyard.Events = new List<Event>()
       {
-        new Event() { Description = "Oi, long night tonight I wish I was in my bed. If your just getting on shift your should go talk to the captain.", TriggerCondition = this.CurrentPlayer.Inventory.Find(item => item.Name == "Guard Uniform") != null && this.CurrentPlayer.Inventory.Find(item => item.Name == "Guard Uniform").InUse, Effect = PlayerStatus.playing },
-        new Event() { Description = "To your left you see a guard approaching you. (GUARD) 'Wat? Who the blazes are you?' Quickly he raises the alarm and several of the crossbow men turn and fire on you. You realize you have made a grave mistake as a bolt slams into your body... ", TriggerCondition = this.CurrentPlayer.Inventory.Find(item => item.Name == "Guard Uniform") == null || !this.CurrentPlayer.Inventory.Find(item => item.Name == "Guard Uniform").InUse, Effect = PlayerStatus.lost }
+        new Event() { Description = "Oi, long night tonight I wish I was in my bed. If your just getting on shift your should go talk to the captain.", RequiredItemName = "Guard Uniform", Effect = PlayerStatus.playing },
+        new Event() { Description = "To your left you see a guard approaching you. (GUARD) 'Wat? Who the blazes are you?' Quickly he raises the alarm and several of the crossbow men turn and fire on you. You realize you have made a grave mistake as a bolt slams into your body... ", ForbiddenItemName = "Guard Uniform", Effect = PlayerStatus.lost }
       };
       castleCourtyard.Exits = new Dictionary<string, Room>()
       {
