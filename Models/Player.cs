@@ -9,7 +9,7 @@ namespace grimtol_checkpoint.Models
   {
     public int Score { get; set; }
     public PlayerStatus Status { get; set; }
-    
+
     public List<Item> Inventory { get; set; }
 
     public Player()
@@ -19,7 +19,17 @@ namespace grimtol_checkpoint.Models
       Inventory = new List<Item>();
     }
 
-    public void Take(Item item) => this.Inventory.Add(item);
+    public void Take(Item item)
+    {
+      if (item.Takeable)
+      {
+        this.Inventory.Add(item);
+      }
+      else
+      {
+        Console.WriteLine("Can't take this item");
+      }
+    }
 
     public void PrintInventory()
     {
