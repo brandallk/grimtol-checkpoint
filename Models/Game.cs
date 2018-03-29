@@ -92,6 +92,9 @@ namespace grimtol_checkpoint.Models
 
     public void TakeTurn()
     {
+      // DEBUG --
+      Console.WriteLine($"    this.CurrentRoom.Name: {this.CurrentRoom.Name}");
+
       if (this.CurrentRoom.Events != null && this.CurrentRoom.Events.Count > 0)
       {
         foreach (Event evt in this.CurrentRoom.Events)
@@ -179,7 +182,7 @@ namespace grimtol_checkpoint.Models
 
     public Dictionary<string, Room> SetupRooms()
     {
-      // VARIABLE DECLARATIONS
+      // CREATE CLASS INSTANCES
       Room hallway = new Room();
       Room barracks = new Room();
       Room castleCourtyard = new Room();
@@ -207,71 +210,71 @@ namespace grimtol_checkpoint.Models
       Event dungeonEvt1 = new Event();
 
       // ITEM DEFINITIONS
-      guardUniform = SetupGuardUniform();
-      wideBed = SetupWideBed();
+      guardUniform = SetupGuardUniform(guardUniform);
+      wideBed = SetupWideBed(wideBed);
       wideBed.UseLocation = barracks;
-      narrowBed = SetupNarrowBed();
+      narrowBed = SetupNarrowBed(narrowBed);
       narrowBed.UseLocation = barracks;
-      key = SetupKey();
+      key = SetupKey(key);
       key.UseLocation = castleCourtyard; // Unlocks door to throne room
-      note = SetupNote();
+      note = SetupNote(note);
       note.UseLocation = squireTower; // Used to get messenger to leave squire tower
-      vial = SetupVial();
+      vial = SetupVial(vial);
       vial.UseLocation = warRoom; // Used to poison cups in the war room
-      hammer = SetupHammer();
+      hammer = SetupHammer(hammer);
       hammer.UseLocation = dungeon; // Used to break lock in dungeon (to free prisoner)
-      brokenLock = SetupBrokenLock();
+      brokenLock = SetupBrokenLock(brokenLock);
       brokenLock.UseLocation = captainsQuarters; // Used to reveal key, note, and vial when presented to captain
-      messengerOvercoat = SetupMessengerOvercoat();
+      messengerOvercoat = SetupMessengerOvercoat(messengerOvercoat);
       messengerOvercoat.UseLocation = dungeon; // Used to disguise the freed prisoner
-      window = SetupWindow();
+      window = SetupWindow(window);
       window.UseLocation = warRoom; // Used to escape at end of game
-      throneRoomDoor = SetupThroneRoomDoor();
+      throneRoomDoor = SetupThroneRoomDoor(throneRoomDoor);
       throneRoomDoor.UseLocation = castleCourtyard; // Used to enter throne room
 
       // EVENT DEFINITIONS
-      courtyardEvt1 = SetupCourtyardEvt1();
-      courtyardEvt2 = SetupCourtyardEvt2();
-      courtyardEvt2 = SetupCaptQuartEvt1();
-      courtyardEvt2 = SetupCaptQuartEvt2();
-      dungeonEvt1 = SetupDungeonEvt1();
+      courtyardEvt1 = SetupCourtyardEvt1(courtyardEvt1);
+      courtyardEvt2 = SetupCourtyardEvt2(courtyardEvt2);
+      captQuartEvt1 = SetupCaptQuartEvt1(captQuartEvt1);
+      captQuartEvt2 = SetupCaptQuartEvt2(captQuartEvt2);
+      dungeonEvt1 = SetupDungeonEvt1(dungeonEvt1);
 
       // ROOM DEFINITIONS
-      hallway = SetupHallway();
+      hallway = SetupHallway(hallway);
       hallway.Exits = new Dictionary<string, Room>() {{"north", barracks}, {"east", castleCourtyard}, {"south", captainsQuarters}};
 
-      barracks = SetupBarracks();
+      barracks = SetupBarracks(barracks);
       barracks.Items = new List<Item>() { guardUniform, wideBed, narrowBed };
       barracks.Exits = new Dictionary<string, Room>() {{"south", hallway}};
 
-      captainsQuarters = SetupCaptainsQuarters();
+      captainsQuarters = SetupCaptainsQuarters(captainsQuarters);
       captainsQuarters.Items = new List<Item>() { key, note, vial };
       captainsQuarters.Events = new List<Event>() { captQuartEvt1, captQuartEvt2 };
       captainsQuarters.Exits = new Dictionary<string, Room>() {{"north", hallway}, {"east, turn north", castleCourtyard}, {"east", guardRoom}};
 
-      castleCourtyard = SetupCastleCourtyard();
+      castleCourtyard = SetupCastleCourtyard(castleCourtyard);
       castleCourtyard.Items = new List<Item>() { throneRoomDoor };
       castleCourtyard.Events = new List<Event>() { courtyardEvt1, courtyardEvt2 };
       castleCourtyard.Exits = new Dictionary<string, Room>() {{"north", throneRoom}, {"north, turn east", squireTower}, {"west", hallway}, {"south, turn west", captainsQuarters}, {"south, turn east", guardRoom}};
 
-      guardRoom = SetupGuardRoom();
+      guardRoom = SetupGuardRoom(guardRoom);
       guardRoom.Items = new List<Item>() { hammer };
       guardRoom.Exits = new Dictionary<string, Room>() {{"west", captainsQuarters}, {"west, turn north", castleCourtyard}, {"north", dungeon}};
 
-      dungeon = SetupDungeon();
+      dungeon = SetupDungeon(dungeon);
       dungeon.Items = new List<Item>() { brokenLock };
       dungeon.Events = new List<Event>() { dungeonEvt1 };
       dungeon.Exits = new Dictionary<string, Room>() {{"south", guardRoom}};
 
-      squireTower = SetupSquireTower();
+      squireTower = SetupSquireTower(squireTower);
       squireTower.Items = new List<Item>() { messengerOvercoat };
       squireTower.Exits = new Dictionary<string, Room>() {{"west, turn south", castleCourtyard}, {"west, turn north", throneRoom}};
 
-      warRoom = SetupWarRoom();
+      warRoom = SetupWarRoom(warRoom);
       warRoom.Items = new List<Item>() { window };
       warRoom.Exits = new Dictionary<string, Room>() {{"south", squireTower}};
 
-      throneRoom = SetupThroneRoom();
+      throneRoom = SetupThroneRoom(throneRoom);
       throneRoom.Items = new List<Item>();
       throneRoom.Exits = new Dictionary<string, Room>() {{"south", castleCourtyard}, {"south, turn west", squireTower}};
 
@@ -300,83 +303,73 @@ namespace grimtol_checkpoint.Models
       };
     }
 
-    public Room SetupHallway()
+    public Room SetupHallway(Room hallway)
     {
-      Room hallway = new Room();
       hallway.Name = "Hallway";
       hallway.Description = "You find yourself in a small hall there doesnt appear to be anything of interest here. You see a passages to the north and south, and a door to the west.";
       hallway.Items = new List<Item>();
       return hallway;
     }
 
-    public Room SetupBarracks()
+    public Room SetupBarracks(Room barracks)
     {
-      Room barracks = new Room();
       barracks.Name = "Barracks";
       barracks.Description = "You see a room with several sleeping guards. The room smells of sweaty men. Near you are a wide bed and a narrow bed; both appear empty. There are several uniforms tossed about.";
       return barracks;
     }
 
-    public Room SetupCaptainsQuarters()
+    public Room SetupCaptainsQuarters(Room captainsQuarters)
     {
-      Room captainsQuarters = new Room();
       captainsQuarters.Name = "Captain's Quarters";
       captainsQuarters.Description = "As you approach the captains Quarters you swallow hard and notice your lips are dry, Stepping into the room you see a few small tables and maps of the countryside sprawled out.";
       return captainsQuarters;
     }
 
-    public Room SetupCastleCourtyard()
+    public Room SetupCastleCourtyard(Room castleCourtyard)
     {
-      Room castleCourtyard = new Room();
       castleCourtyard.Name = "Castle Courtyard";
       castleCourtyard.Description = "You step into the large castle courtyard there is a flowing fountain in the middle of the grounds and a few guards patrolling the area.";
       return castleCourtyard;
     }
 
-    public Room SetupGuardRoom()
+    public Room SetupGuardRoom(Room guardRoom)
     {
-      Room guardRoom = new Room();
       guardRoom.Name = "Guard Room";
       guardRoom.Description = "Pushing open the door of the guard room you look around and notice the room is empty, There are a few small tools in the corner and a chair propped against the wall near the that likely leads to the dungeon.";
       return guardRoom;
     }
 
-    public Room SetupDungeon()
+    public Room SetupDungeon(Room dungeon)
     {
-      Room dungeon = new Room();
       dungeon.Name = "Dungeon";
       dungeon.Description = "As you descend the stairs to the dungeon you notice a harsh chill to the air. Landing a the base of the stairs you see what the remains of a previous prisoner.";
       return dungeon;
     }
 
-    public Room SetupSquireTower()
+    public Room SetupSquireTower(Room squireTower)
     {
-      Room squireTower = new Room();
       squireTower.Name = "Squire Tower";
       squireTower.Description = "As you finish climbing the stairs to the squire tower you see a messenger nestled in his bed. His messenger overcoat is hanging from his bed post.";
       return squireTower;
     }
 
-    public Room SetupWarRoom()
+    public Room SetupWarRoom(Room warRoom)
     {
-      Room warRoom = new Room();
       warRoom.Name = "War Room";
       warRoom.Description = "Steping into the war room you see several maps spread across tables. On the maps many of the villages have been marked for purification. You also notice several dishes of prepared food to the side perhaps the war council will be meeting soon.";
       return warRoom;
     }
 
-    public Room SetupThroneRoom()
+    public Room SetupThroneRoom(Room throneRoom)
     {
-      Room throneRoom = new Room();
       throneRoom.Name = "Throne Room";
       throneRoom.Description = "As you unlock the door and swing it wide you see an enormous hall stretching out before you. At the opposite end of the hall sitting on his throne you see the dark lord. The Dark Lord shouts at you demanding why you dared to interrupt him during his Ritual of Evil Summoning... Dumbfounded you mutter an incoherent response. Becoming more enraged the Dark Lord complains that you just ruined his concentration and he will now have to start the ritual over... Quickly striding towards you he smirks at least I know have a sacrificial volunteer. Plunging his jewel encrusted dagger into your heart your world slowly fades away.";
       throneRoom.Items = new List<Item>();
       return throneRoom;
     }
 
-    public Item SetupGuardUniform()
+    public Item SetupGuardUniform(Item guardUniform)
     {
-      Item guardUniform = new Item();
       guardUniform.Name = "Guard Uniform";
       guardUniform.Description = "Guard Uniform";
       guardUniform.Takeable = true;
@@ -390,9 +383,8 @@ namespace grimtol_checkpoint.Models
       return guardUniform;
     }
 
-    public Item SetupWideBed()
+    public Item SetupWideBed(Item wideBed)
     {
-      Item wideBed = new Item();
       wideBed.Name = "Wide Bed";
       wideBed.Description = "Wide Bed";
       wideBed.Takeable = false;
@@ -405,9 +397,8 @@ namespace grimtol_checkpoint.Models
       return wideBed;
     }
 
-    public Item SetupNarrowBed()
+    public Item SetupNarrowBed(Item narrowBed)
     {
-      Item narrowBed = new Item();
       narrowBed.Name = "Narrow Bed";
       narrowBed.Description = "Narrow Bed";
       narrowBed.Takeable = false;
@@ -420,9 +411,8 @@ namespace grimtol_checkpoint.Models
       return narrowBed;
     }
 
-    public Item SetupKey()
+    public Item SetupKey(Item key)
     {
-      Item key = new Item();
       key.Name = "Key";
       key.Description = "Key";
       key.Takeable = true;
@@ -434,9 +424,8 @@ namespace grimtol_checkpoint.Models
       return key;
     }
 
-    public Item SetupNote()
+    public Item SetupNote(Item note)
     {
-      Item note = new Item();
       note.Name = "Note";
       note.Description = "Note";
       note.Takeable = true;
@@ -449,9 +438,8 @@ namespace grimtol_checkpoint.Models
       return note;
     }
 
-    public Item SetupVial()
+    public Item SetupVial(Item vial)
     {
-      Item vial = new Item();
       vial.Name = "Vial";
       vial.Description = "Vial";
       vial.Takeable = true;
@@ -464,9 +452,8 @@ namespace grimtol_checkpoint.Models
       return vial;
     }
 
-    public Item SetupHammer()
+    public Item SetupHammer(Item hammer)
     {
-      Item hammer = new Item();
       hammer.Name = "Hammer";
       hammer.Description = "Hammer";
       hammer.Takeable = true;
@@ -478,9 +465,8 @@ namespace grimtol_checkpoint.Models
       return hammer;
     }
 
-    public Item SetupBrokenLock()
+    public Item SetupBrokenLock(Item brokenLock)
     {
-      Item brokenLock = new Item();
       brokenLock.Name = "Broken Lock";
       brokenLock.Description = "Broken Lock";
       brokenLock.Takeable = true;
@@ -493,9 +479,8 @@ namespace grimtol_checkpoint.Models
       return brokenLock;
     }
 
-    public Item SetupMessengerOvercoat()
+    public Item SetupMessengerOvercoat(Item messengerOvercoat)
     {
-      Item messengerOvercoat = new Item();
       messengerOvercoat.Name = "Messenger Overcoat";
       messengerOvercoat.Description = "Messenger Overcoat";
       messengerOvercoat.Takeable = true;
@@ -508,9 +493,8 @@ namespace grimtol_checkpoint.Models
       return messengerOvercoat;
     }
 
-    public Item SetupWindow()
+    public Item SetupWindow(Item window)
     {
-      Item window = new Item();
       window.Name = "Window";
       window.Description = "Window";
       window.Takeable = false;
@@ -523,9 +507,8 @@ namespace grimtol_checkpoint.Models
       return window;
     }
 
-    public Item SetupThroneRoomDoor()
+    public Item SetupThroneRoomDoor(Item throneRoomDoor)
     {
-      Item throneRoomDoor = new Item();
       throneRoomDoor.Name = "Throne Room Door";
       throneRoomDoor.Description = "Throne Room Door";
       throneRoomDoor.Takeable = false;
@@ -538,9 +521,8 @@ namespace grimtol_checkpoint.Models
       return throneRoomDoor;
     }
 
-    public Event SetupCourtyardEvt1()
+    public Event SetupCourtyardEvt1(Event courtyardEvt1)
     {
-      Event courtyardEvt1 = new Event();
       courtyardEvt1.Description = "Oi, long night tonight I wish I was in my bed. If your just getting on shift your should go talk to the captain.";
       courtyardEvt1.RequiredItemName = "Guard Uniform";
       courtyardEvt1.ForbiddenItemName = null;
@@ -548,9 +530,8 @@ namespace grimtol_checkpoint.Models
       return courtyardEvt1;
     }
 
-    public Event SetupCourtyardEvt2()
+    public Event SetupCourtyardEvt2(Event courtyardEvt2)
     {
-      Event courtyardEvt2 = new Event();
       courtyardEvt2.Description = "To your left you see a guard approaching you. (GUARD) 'Wat? Who the blazes are you?' Quickly he raises the alarm and several of the crossbow men turn and fire on you. You realize you have made a grave mistake as a bolt slams into your body...";
       courtyardEvt2.RequiredItemName = null;
       courtyardEvt2.ForbiddenItemName = "Guard Uniform";
@@ -558,9 +539,8 @@ namespace grimtol_checkpoint.Models
       return courtyardEvt2;
     }
 
-    public Event SetupCaptQuartEvt1()
+    public Event SetupCaptQuartEvt1(Event captQuartEvt1)
     {
-      Event captQuartEvt1 = new Event();
       captQuartEvt1.Description = "The captain on shift greets you (CAPTAIN) 'New recruit huh. Well lets stick you in the guard room you can't screw things up there. Go relieve (He pauses and glancing at his reports) 'private Miyamoto.";
       captQuartEvt1.RequiredItemName = "Broken Lock";
       captQuartEvt1.ForbiddenItemName = null;
@@ -568,9 +548,8 @@ namespace grimtol_checkpoint.Models
       return captQuartEvt1;
     }
 
-    public Event SetupCaptQuartEvt2()
+    public Event SetupCaptQuartEvt2(Event captQuartEvt2)
     {
-      Event captQuartEvt2 = new Event();
       captQuartEvt2.Description = "(CAPTAIN) What are you doing here? Go stay in the Guard Room.";
       captQuartEvt2.RequiredItemName = null;
       captQuartEvt2.ForbiddenItemName = "Broken Lock";
@@ -578,9 +557,8 @@ namespace grimtol_checkpoint.Models
       return captQuartEvt2;
     }
 
-    public Event SetupDungeonEvt1()
+    public Event SetupDungeonEvt1(Event dungeonEvt1)
     {
-      Event dungeonEvt1 = new Event();
       dungeonEvt1.Description = "You also notice a man sitting in shackles. As you approach him you notice a small lock binding him to the wall with chains. As you near the prisoner his face turns to a deep frown.... (PRISONER) You look familiar, Hey thats right I know you from the village. Have you seriously turned your back on us and joined this squad of goons, He sighs defeated...";
       dungeonEvt1.RequiredItemName = null;
       dungeonEvt1.ForbiddenItemName = null;
