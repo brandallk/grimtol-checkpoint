@@ -31,16 +31,18 @@ namespace grimtol_checkpoint.Models
 
       // IN PROGRESS -- YOU SHOULD NOT BE ABLE TO USE THE HAMMER IN GUARD ROOM, AND YOU SHOULD NOT BE ABLE TO USE IT AT ALL UNTIL IT HAS 1ST BEEN TAKEN
       // DEBUG --
-      Console.WriteLine($"{itemName} is foundItem: {foundItem != null}");
-      // Console.WriteLine($"{itemName} is Useable: {foundItem.Useable}");
-      // Console.WriteLine($"{itemName} is Takeable: {foundItem.Takeable}");
-      // Console.WriteLine($"{itemName} is Locked: {foundItem.Locked}");
-      // Console.WriteLine($"{itemName} UseLocation: {foundItem.UseLocation}");
-      Console.WriteLine($"{itemName} is inventoryItem: {inventoryItem != null}");
-      // Console.WriteLine($"{itemName} is Useable: {inventoryItem.Useable}");
-      // Console.WriteLine($"{itemName} is Takeable: {inventoryItem.Takeable}");
-      // Console.WriteLine($"{itemName} is Locked: {inventoryItem.Locked}");
-      // Console.WriteLine($"{itemName} UseLocation: {inventoryItem.UseLocation}");
+      // Console.WriteLine($"    {itemName} is foundItem: {foundItem != null}");
+      // Console.WriteLine($"    {itemName} is Useable: {foundItem.Useable}");
+      // Console.WriteLine($"    {itemName} is Takeable: {foundItem.Takeable}");
+      // Console.WriteLine($"    {itemName} is Locked: {foundItem.Locked}");
+      // string s = foundItem.UseLocation != null ? foundItem.UseLocation.Name : null;
+      // Console.WriteLine($"    {itemName} UseLocation: {s}");
+      // Console.WriteLine($"    {itemName} is inventoryItem: {inventoryItem != null}");
+      // Console.WriteLine($"    {itemName} is Useable: {inventoryItem.Useable}");
+      // Console.WriteLine($"    {itemName} is Takeable: {inventoryItem.Takeable}");
+      // Console.WriteLine($"    {itemName} is Locked: {inventoryItem.Locked}");
+      // string s = inventoryItem.UseLocation != null ? inventoryItem.UseLocation.Name : null;
+      // Console.WriteLine($"    {itemName} UseLocation: {inventoryItem.UseLocation.Name ?? null}");
 
       // To use an item found in a room (without taking it first), it must not be takeable, it must be useable in the current room, and it can't have 'locked' = TRUE
       if (foundItem != null && foundItem.Useable)
@@ -59,6 +61,10 @@ namespace grimtol_checkpoint.Models
             }
           }
         }
+        else
+        {
+          Console.WriteLine("Sorry, you cannot 'use' this item yet.");
+        }
       }
       // To use an inventory item, it must have already been taken (because that's how it got added to the inventory), it must be useable in the current room, and it can't have 'locked' = TRUE
       else if (inventoryItem != null)
@@ -76,10 +82,10 @@ namespace grimtol_checkpoint.Models
             }
           }
         }
-      }
-      else
-      {
-        Console.WriteLine("Sorry, you must 'take' this item before you can use it.");
+        else
+        {
+          Console.WriteLine("Sorry, you must 'take' this item before you can use it.");
+        }
       }
     }
 
@@ -259,42 +265,42 @@ namespace grimtol_checkpoint.Models
 
       // ROOM DEFINITIONS
       hallway = SetupHallway(hallway);
-      hallway.Exits = new Dictionary<string, Room>() {{"north", barracks}, {"east", castleCourtyard}};
+      hallway.Exits = new Dictionary<string, Room>() { { "north", barracks }, { "east", castleCourtyard } };
 
       barracks = SetupBarracks(barracks);
       barracks.Items = new List<Item>() { guardUniform, wideBed, narrowBed };
-      barracks.Exits = new Dictionary<string, Room>() {{"south", hallway}};
+      barracks.Exits = new Dictionary<string, Room>() { { "south", hallway } };
 
       captainsQuarters = SetupCaptainsQuarters(captainsQuarters);
       captainsQuarters.Items = new List<Item>() { key, note, vial };
       captainsQuarters.Events = new List<Event>() { captQuartEvt1, captQuartEvt2 };
-      captainsQuarters.Exits = new Dictionary<string, Room>() {{"north", hallway}, {"east, turn north", castleCourtyard}, {"east", guardRoom}};
+      captainsQuarters.Exits = new Dictionary<string, Room>() { { "north", hallway }, { "east, turn north", castleCourtyard }, { "east", guardRoom } };
 
       castleCourtyard = SetupCastleCourtyard(castleCourtyard);
       castleCourtyard.Items = new List<Item>() { throneRoomDoor };
       castleCourtyard.Events = new List<Event>() { courtyardEvt1, courtyardEvt2 };
-      castleCourtyard.Exits = new Dictionary<string, Room>() {{"north", throneRoom}, {"north, turn east", squireTower}, {"west", hallway}, {"south, turn west", captainsQuarters}, {"south, turn east", guardRoom}};
+      castleCourtyard.Exits = new Dictionary<string, Room>() { { "north", throneRoom }, { "north, turn east", squireTower }, { "west", hallway }, { "south, turn west", captainsQuarters }, { "south, turn east", guardRoom } };
 
       guardRoom = SetupGuardRoom(guardRoom);
       guardRoom.Items = new List<Item>() { hammer };
-      guardRoom.Exits = new Dictionary<string, Room>() {{"west", captainsQuarters}, {"west, turn north", castleCourtyard}, {"north", dungeon}};
+      guardRoom.Exits = new Dictionary<string, Room>() { { "west", captainsQuarters }, { "west, turn north", castleCourtyard }, { "north", dungeon } };
 
       dungeon = SetupDungeon(dungeon);
       dungeon.Items = new List<Item>() { brokenLock };
       dungeon.Events = new List<Event>() { dungeonEvt1 };
-      dungeon.Exits = new Dictionary<string, Room>() {{"south", guardRoom}};
+      dungeon.Exits = new Dictionary<string, Room>() { { "south", guardRoom } };
 
       squireTower = SetupSquireTower(squireTower);
       squireTower.Items = new List<Item>() { messengerOvercoat };
-      squireTower.Exits = new Dictionary<string, Room>() {{"west, turn south", castleCourtyard}, {"west, turn north", throneRoom}};
+      squireTower.Exits = new Dictionary<string, Room>() { { "west, turn south", castleCourtyard }, { "west, turn north", throneRoom } };
 
       warRoom = SetupWarRoom(warRoom);
       warRoom.Items = new List<Item>() { window };
-      warRoom.Exits = new Dictionary<string, Room>() {{"south", squireTower}};
+      warRoom.Exits = new Dictionary<string, Room>() { { "south", squireTower } };
 
       throneRoom = SetupThroneRoom(throneRoom);
       throneRoom.Items = new List<Item>();
-      throneRoom.Exits = new Dictionary<string, Room>() {{"south", castleCourtyard}, {"south, turn west", squireTower}};
+      throneRoom.Exits = new Dictionary<string, Room>() { { "south", castleCourtyard }, { "south, turn west", squireTower } };
 
       // DEFINE ITEM EFFECTS ON OTHER ITEMS
       key.EffectOnOtherItem = // (Unlocks door to throne room)

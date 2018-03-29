@@ -21,7 +21,7 @@ namespace grimtol_checkpoint.Models
 
     public void Take(Item item)
     {
-      if (item.Takeable)
+      if (item.Takeable && item.Locked == false) // Can't 'take' and item unless it's 'takeable' and not 'locked'
       {
         this.Inventory.Add(item);
       }
