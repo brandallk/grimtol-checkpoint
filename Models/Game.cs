@@ -29,15 +29,29 @@ namespace grimtol_checkpoint.Models
       Item foundItem = this.CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
       Item inventoryItem = this.CurrentPlayer.Inventory.Find(invItem => invItem.Name.ToLower() == itemName);
 
-      // To use an item found in a room (without taking it first), it must be takeable, it must be useable in the current room, and it can't have 'locked' = TRUE
+      // IN PROGRESS -- YOU SHOULD NOT BE ABLE TO USE THE HAMMER IN GUARD ROOM, AND YOU SHOULD NOT BE ABLE TO USE IT AT ALL UNTIL IT HAS 1ST BEEN TAKEN
+      // DEBUG --
+      Console.WriteLine($"{itemName} is foundItem: {foundItem != null}");
+      // Console.WriteLine($"{itemName} is Useable: {foundItem.Useable}");
+      // Console.WriteLine($"{itemName} is Takeable: {foundItem.Takeable}");
+      // Console.WriteLine($"{itemName} is Locked: {foundItem.Locked}");
+      // Console.WriteLine($"{itemName} UseLocation: {foundItem.UseLocation}");
+      Console.WriteLine($"{itemName} is inventoryItem: {inventoryItem != null}");
+      // Console.WriteLine($"{itemName} is Useable: {inventoryItem.Useable}");
+      // Console.WriteLine($"{itemName} is Takeable: {inventoryItem.Takeable}");
+      // Console.WriteLine($"{itemName} is Locked: {inventoryItem.Locked}");
+      // Console.WriteLine($"{itemName} UseLocation: {inventoryItem.UseLocation}");
+
+      // To use an item found in a room (without taking it first), it must not be takeable, it must be useable in the current room, and it can't have 'locked' = TRUE
       if (foundItem != null && foundItem.Useable)
       {
-        if (!foundItem.Takeable && (foundItem.UseLocation == null || foundItem.UseLocation == this.CurrentRoom) && foundItem.Locked == false)
+        if (!foundItem.Takeable && foundItem.Locked == false
+            && (foundItem.UseLocation == null || foundItem.UseLocation == this.CurrentRoom))
         {
           Console.WriteLine(foundItem.UseDescription);
           this.CurrentPlayer.Status = foundItem.EffectOnPlayer;
           foundItem.InUse = true;
-          if (foundItem.EffectOnOtherItem.Count > 0) // Account for this item's effect on another item (if any)
+          if (foundItem.EffectOnOtherItem != null) // Account for this item's effect on another item (if any)
           {
             foreach (KeyValuePair<Item, bool> item in foundItem.EffectOnOtherItem)
             {
@@ -54,7 +68,7 @@ namespace grimtol_checkpoint.Models
           Console.WriteLine(inventoryItem.UseDescription);
           this.CurrentPlayer.Status = inventoryItem.EffectOnPlayer;
           inventoryItem.InUse = true;
-          if (inventoryItem.EffectOnOtherItem.Count > 0) // Account for this item's effect on another item (if any)
+          if (inventoryItem.EffectOnOtherItem != null) // Account for this item's effect on another item (if any)
           {
             foreach (KeyValuePair<Item, bool> item in inventoryItem.EffectOnOtherItem)
             {
@@ -62,6 +76,10 @@ namespace grimtol_checkpoint.Models
             }
           }
         }
+      }
+      else
+      {
+        Console.WriteLine("Sorry, you must 'take' this item before you can use it.");
       }
     }
 
@@ -241,7 +259,7 @@ namespace grimtol_checkpoint.Models
 
       // ROOM DEFINITIONS
       hallway = SetupHallway(hallway);
-      hallway.Exits = new Dictionary<string, Room>() {{"north", barracks}, {"east", castleCourtyard}, {"south", captainsQuarters}};
+      hallway.Exits = new Dictionary<string, Room>() {{"north", barracks}, {"east", castleCourtyard}};
 
       barracks = SetupBarracks(barracks);
       barracks.Items = new List<Item>() { guardUniform, wideBed, narrowBed };
