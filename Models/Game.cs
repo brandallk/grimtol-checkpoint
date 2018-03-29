@@ -84,7 +84,7 @@ namespace grimtol_checkpoint.Models
         }
         else
         {
-          Console.WriteLine("Sorry, you must 'take' this item before you can use it.");
+          Console.WriteLine("Sorry, you cannot 'use' this item yet.");
         }
       }
     }
@@ -156,8 +156,16 @@ namespace grimtol_checkpoint.Models
           string direction = action.ToLower().Substring(3);
           if (this.CurrentRoom.Exit(direction))
           {
-            validOption = true;
-            this.CurrentRoom = this.CurrentRoom.Exits[direction];
+            Room nextRoom = this.CurrentRoom.Exits[direction];
+            if (!nextRoom.Door.Locked)
+            {
+              validOption = true;
+              this.CurrentRoom = this.CurrentRoom.Exits[direction];
+            }
+            else
+            {
+              Console.WriteLine("That door is locked!");
+            }
           }
           else
           {
@@ -223,7 +231,7 @@ namespace grimtol_checkpoint.Models
       Item note = new Item();
       Item vial = new Item();
       Item hammer = new Item();
-      Item brokenLock = new Item();
+      Item dungeonLock = new Item();
       Item messengerOvercoat = new Item();
       Item window = new Item();
       Item throneRoomDoor = new Item();
@@ -247,8 +255,8 @@ namespace grimtol_checkpoint.Models
       vial.UseLocation = warRoom; // Used to poison cups in the war room
       hammer = SetupHammer(hammer);
       hammer.UseLocation = dungeon; // Used to break lock in dungeon (to free prisoner)
-      brokenLock = SetupBrokenLock(brokenLock);
-      brokenLock.UseLocation = captainsQuarters; // Used to reveal key, note, and vial when presented to captain
+      dungeonLock = SetupDungeonLock(dungeonLock);
+      dungeonLock.UseLocation = captainsQuarters; // Used to reveal key, note, and vial when presented to captain
       messengerOvercoat = SetupMessengerOvercoat(messengerOvercoat);
       messengerOvercoat.UseLocation = dungeon; // Used to disguise the freed prisoner
       window = SetupWindow(window);
@@ -286,7 +294,7 @@ namespace grimtol_checkpoint.Models
       guardRoom.Exits = new Dictionary<string, Room>() { { "west", captainsQuarters }, { "west, turn north", castleCourtyard }, { "north", dungeon } };
 
       dungeon = SetupDungeon(dungeon);
-      dungeon.Items = new List<Item>() { brokenLock };
+      dungeon.Items = new List<Item>() { dungeonLock };
       dungeon.Events = new List<Event>() { dungeonEvt1 };
       dungeon.Exits = new Dictionary<string, Room>() { { "south", guardRoom } };
 
@@ -305,11 +313,17 @@ namespace grimtol_checkpoint.Models
       // DEFINE ITEM EFFECTS ON OTHER ITEMS
       key.EffectOnOtherItem = // (Unlocks door to throne room)
         new Dictionary<Item, bool>() {
-          {castleCourtyard.Items.Find(item => item.Name == "Throne Room Door"), false}
+          {throneRoom.Door, false}
         };
       hammer.EffectOnOtherItem = // (Unlocks lock in dungeon)
         new Dictionary<Item, bool>() {
-          {dungeon.Items.Find(item => item.Name == "Broken Lock"), false}
+          {dungeon.Items.Find(item => item.Name == "Dungeon Lock"), false}
+        };
+      dungeonLock.EffectOnOtherItem =
+        new Dictionary<Item, bool>() {
+          {captainsQuarters.Items.Find(item => item.Name == "Key"), false},
+          {captainsQuarters.Items.Find(item => item.Name == "Note"), false},
+          {captainsQuarters.Items.Find(item => item.Name == "Vial"), false}
         };
 
       // CONSTRUCT THIS.ROOMS OBJECT
@@ -332,6 +346,8 @@ namespace grimtol_checkpoint.Models
       hallway.Name = "Hallway";
       hallway.Description = "You find yourself in a small hall there doesnt appear to be anything of interest here. You see a passages to the north and south, and a door to the west.";
       hallway.Items = new List<Item>();
+      hallway.Door = new Item();
+      hallway.Door.Locked = false;
       return hallway;
     }
 
@@ -339,6 +355,8 @@ namespace grimtol_checkpoint.Models
     {
       barracks.Name = "Barracks";
       barracks.Description = "You see a room with several sleeping guards. The room smells of sweaty men. Near you are a wide bed and a narrow bed; both appear empty. There are several uniforms tossed about.";
+      barracks.Door = new Item();
+      barracks.Door.Locked = false;
       return barracks;
     }
 
@@ -346,6 +364,8 @@ namespace grimtol_checkpoint.Models
     {
       captainsQuarters.Name = "Captain's Quarters";
       captainsQuarters.Description = "As you approach the captains Quarters you swallow hard and notice your lips are dry, Stepping into the room you see a few small tables and maps of the countryside sprawled out.";
+      captainsQuarters.Door = new Item();
+      captainsQuarters.Door.Locked = false;
       return captainsQuarters;
     }
 
@@ -353,6 +373,8 @@ namespace grimtol_checkpoint.Models
     {
       castleCourtyard.Name = "Castle Courtyard";
       castleCourtyard.Description = "You step into the large castle courtyard there is a flowing fountain in the middle of the grounds and a few guards patrolling the area.";
+      castleCourtyard.Door = new Item();
+      castleCourtyard.Door.Locked = false;
       return castleCourtyard;
     }
 
@@ -360,6 +382,8 @@ namespace grimtol_checkpoint.Models
     {
       guardRoom.Name = "Guard Room";
       guardRoom.Description = "Pushing open the door of the guard room you look around and notice the room is empty, There are a few small tools in the corner and a chair propped against the wall near the that likely leads to the dungeon.";
+      guardRoom.Door = new Item();
+      guardRoom.Door.Locked = false;
       return guardRoom;
     }
 
@@ -367,6 +391,8 @@ namespace grimtol_checkpoint.Models
     {
       dungeon.Name = "Dungeon";
       dungeon.Description = "As you descend the stairs to the dungeon you notice a harsh chill to the air. Landing a the base of the stairs you see what the remains of a previous prisoner.";
+      dungeon.Door = new Item();
+      dungeon.Door.Locked = false;
       return dungeon;
     }
 
@@ -374,6 +400,8 @@ namespace grimtol_checkpoint.Models
     {
       squireTower.Name = "Squire Tower";
       squireTower.Description = "As you finish climbing the stairs to the squire tower you see a messenger nestled in his bed. His messenger overcoat is hanging from his bed post.";
+      squireTower.Door = new Item();
+      squireTower.Door.Locked = false;
       return squireTower;
     }
 
@@ -381,6 +409,8 @@ namespace grimtol_checkpoint.Models
     {
       warRoom.Name = "War Room";
       warRoom.Description = "Steping into the war room you see several maps spread across tables. On the maps many of the villages have been marked for purification. You also notice several dishes of prepared food to the side perhaps the war council will be meeting soon.";
+      warRoom.Door = new Item();
+      warRoom.Door.Locked = false;
       return warRoom;
     }
 
@@ -389,6 +419,8 @@ namespace grimtol_checkpoint.Models
       throneRoom.Name = "Throne Room";
       throneRoom.Description = "As you unlock the door and swing it wide you see an enormous hall stretching out before you. At the opposite end of the hall sitting on his throne you see the dark lord. The Dark Lord shouts at you demanding why you dared to interrupt him during his Ritual of Evil Summoning... Dumbfounded you mutter an incoherent response. Becoming more enraged the Dark Lord complains that you just ruined his concentration and he will now have to start the ritual over... Quickly striding towards you he smirks at least I know have a sacrificial volunteer. Plunging his jewel encrusted dagger into your heart your world slowly fades away.";
       throneRoom.Items = new List<Item>();
+      throneRoom.Door = new Item();
+      throneRoom.Door.Locked = true;
       return throneRoom;
     }
 
@@ -489,18 +521,18 @@ namespace grimtol_checkpoint.Models
       return hammer;
     }
 
-    public Item SetupBrokenLock(Item brokenLock)
+    public Item SetupDungeonLock(Item dungeonLock)
     {
-      brokenLock.Name = "Broken Lock";
-      brokenLock.Description = "Broken Lock";
-      brokenLock.Takeable = true;
-      brokenLock.Useable = true;
-      brokenLock.Locked = true; // Unlocked by using hammer (to break it)
-      brokenLock.UseDescription = "What an escaped prisoner... When did this happen? Quick take this (He slams a silver key on the table and jots down a quick note) go fetch a messenger boy for me and have him take this note the Gate Captain Ezio, but keep this quite. If That prisoner is really has escaped it will be both our heads. (CAPTAIN) I'll go rouse the guards, (The captain runs to the door north heading for the Barracks)";
-      brokenLock.EffectOnPlayer = PlayerStatus.playing;
-      brokenLock.EffectOnOtherItem = null;
-      brokenLock.InUse = false;
-      return brokenLock;
+      dungeonLock.Name = "Dungeon Lock";
+      dungeonLock.Description = "Dungeon Lock";
+      dungeonLock.Takeable = true;
+      dungeonLock.Useable = true;
+      dungeonLock.Locked = true; // Unlocked by using hammer (to break it)
+      dungeonLock.UseDescription = "What an escaped prisoner... When did this happen? Quick take this (He slams a silver key on the table and jots down a quick note) go fetch a messenger boy for me and have him take this note the Gate Captain Ezio, but keep this quite. If That prisoner is really has escaped it will be both our heads. (CAPTAIN) I'll go rouse the guards, (The captain runs to the door north heading for the Barracks)";
+      dungeonLock.EffectOnPlayer = PlayerStatus.playing;
+      dungeonLock.EffectOnOtherItem = null;
+      dungeonLock.InUse = false;
+      return dungeonLock;
     }
 
     public Item SetupMessengerOvercoat(Item messengerOvercoat)

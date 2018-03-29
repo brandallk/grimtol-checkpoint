@@ -11,6 +11,7 @@ namespace grimtol_checkpoint.Models
     public List<Item> Items { get; set; }
     public Dictionary<string, Room> Exits { get; set; }
     public List<Event> Events { get; set; }
+    public Item Door { get; set; }
 
     public void UseItem(Item item)
     {
