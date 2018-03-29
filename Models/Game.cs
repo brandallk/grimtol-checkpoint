@@ -201,8 +201,13 @@ namespace grimtol_checkpoint.Models
       Item window = new Item();
       Item throneRoomDoor = new Item();
 
+      Event courtyardEvt1 = new Event();
+      Event courtyardEvt2 = new Event();
+      Event captQuartEvt1 = new Event();
+      Event captQuartEvt2 = new Event();
+      Event dungeonEvt1 = new Event();
+
       // ITEM DEFINITIONS
-      // TODO: NEED TO FILL IN THESE ITEMS' Name, Description, Takeable, Useable, UseLocation, Locked, UseDescription, EffectOnPlayer, EffectOnOtherItem, InUse
       guardUniform = SetupGuardUniform();
       wideBed = SetupWideBed();
       narrowBed = SetupNarrowBed();
@@ -215,6 +220,13 @@ namespace grimtol_checkpoint.Models
       window = SetupWindow();
       throneRoomDoor = SetupThroneRoomDoor();
 
+      // ITEM DEFINITIONS
+      courtyardEvt1 = SetupCourtyardEvt1();
+      courtyardEvt2 = SetupCourtyardEvt2();
+      courtyardEvt2 = SetupCaptQuartEvt1();
+      courtyardEvt2 = SetupCaptQuartEvt2();
+      dungeonEvt1 = SetupDungeonEvt1();
+
       // ROOM DEFINITIONS
       hallway.Name = "Hallway";
       hallway.Description = "You find yourself in a small hall there doesnt appear to be anything of interest here. You see a passages to the north and south, and a door to the west.";
@@ -226,47 +238,39 @@ namespace grimtol_checkpoint.Models
       barracks.Items = new List<Item>() { guardUniform, wideBed, narrowBed };
       barracks.Exits = new Dictionary<string, Room>() {{"south", hallway}};
 
-      // TODO: NEED TO DEFINE EVENTS THAT HAPPEN ON ENTERING THIS ROOM
       captainsQuarters.Name = "Captain's Quarters";
       captainsQuarters.Description = "As you approach the captains Quarters you swallow hard and notice your lips are dry, Stepping into the room you see a few small tables and maps of the countryside sprawled out.";
       captainsQuarters.Items = new List<Item>() { key, note, vial };
+      captainsQuarters.Events = new List<Event>() { captQuartEvt1, captQuartEvt2 };
       captainsQuarters.Exits = new Dictionary<string, Room>() {{"north", hallway}, {"east, turn north", castleCourtyard}, {"east", guardRoom}};
 
       castleCourtyard.Name = "Castle Courtyard";
       castleCourtyard.Description = "You step into the large castle courtyard there is a flowing fountain in the middle of the grounds and a few guards patrolling the area.";
       castleCourtyard.Items = new List<Item>() { throneRoomDoor };
-      castleCourtyard.Events = new List<Event>()
-      {
-        new Event() { Description = "Oi, long night tonight I wish I was in my bed. If your just getting on shift your should go talk to the captain.", RequiredItemName = "Guard Uniform", Effect = PlayerStatus.playing },
-        new Event() { Description = "To your left you see a guard approaching you. (GUARD) 'Wat? Who the blazes are you?' Quickly he raises the alarm and several of the crossbow men turn and fire on you. You realize you have made a grave mistake as a bolt slams into your body... ", ForbiddenItemName = "Guard Uniform", Effect = PlayerStatus.lost }
-      };
+      castleCourtyard.Events = new List<Event>() { courtyardEvt1, courtyardEvt2 };
       castleCourtyard.Exits = new Dictionary<string, Room>() {{"north", throneRoom}, {"north, turn east", squireTower}, {"west", hallway}, {"south, turn west", captainsQuarters}, {"south, turn east", guardRoom}};
 
-      // TODO: NEED TO DEFINE EVENTS THAT HAPPEN ON ENTERING THIS ROOM
       guardRoom.Name = "Guard Room";
       guardRoom.Description = "Pushing open the door of the guard room you look around and notice the room is empty, There are a few small tools in the corner and a chair propped against the wall near the that likely leads to the dungeon.";
       guardRoom.Items = new List<Item>() { hammer };
       guardRoom.Exits = new Dictionary<string, Room>() {{"west", captainsQuarters}, {"west, turn north", castleCourtyard}, {"north", dungeon}};
 
-      // TODO: NEED TO DEFINE EVENTS THAT HAPPEN ON ENTERING THIS ROOM
       dungeon.Name = "Dungeon";
       dungeon.Description = "As you descend the stairs to the dungeon you notice a harsh chill to the air. Landing a the base of the stairs you see what the remains of a previous prisoner.";
       dungeon.Items = new List<Item>() { brokenLock };
+      dungeon.Events = new List<Event>() { dungeonEvt1 };
       dungeon.Exits = new Dictionary<string, Room>() {{"south", guardRoom}};
 
-      // TODO: NEED TO DEFINE EVENTS THAT HAPPEN ON ENTERING THIS ROOM
       squireTower.Name = "Squire Tower";
       squireTower.Description = "As you finish climbing the stairs to the squire tower you see a messenger nestled in his bed. His messenger overcoat is hanging from his bed post.";
       squireTower.Items = new List<Item>() { messengerOvercoat };
       squireTower.Exits = new Dictionary<string, Room>() {{"west, turn south", castleCourtyard}, {"west, turn north", throneRoom}};
 
-      // TODO: NEED TO DEFINE EVENTS THAT HAPPEN ON ENTERING THIS ROOM
       warRoom.Name = "War Room";
       warRoom.Description = "Steping into the war room you see several maps spread across tables. On the maps many of the villages have been marked for purification. You also notice several dishes of prepared food to the side perhaps the war council will be meeting soon.";
       warRoom.Items = new List<Item>() { window };
       warRoom.Exits = new Dictionary<string, Room>() {{"south", squireTower}};
 
-      // TODO: NEED TO DEFINE EVENTS THAT HAPPEN ON ENTERING THIS ROOM
       throneRoom.Name = "Throne Room";
       throneRoom.Description = "As you unlock the door and swing it wide you see an enormous hall stretching out before you. At the opposite end of the hall sitting on his throne you see the dark lord. The Dark Lord shouts at you demanding why you dared to interrupt him during his Ritual of Evil Summoning... Dumbfounded you mutter an incoherent response. Becoming more enraged the Dark Lord complains that you just ruined his concentration and he will now have to start the ritual over... Quickly striding towards you he smirks at least I know have a sacrificial volunteer. Plunging his jewel encrusted dagger into your heart your world slowly fades away.";
       throneRoom.Items = new List<Item>();
@@ -363,7 +367,7 @@ namespace grimtol_checkpoint.Models
       note.Useable = true;
       note.UseLocation = this.Rooms["Squire Tower"]; // Used to get messenger to leave squire tower
       note.Locked = true; // Unlocked when use broken lock
-      note.UseDescription = "You wake the messenger and hand him the note along with his orders.";
+      note.UseDescription = "Shouting at the messenger you kick his bed and demand he take your note to the gate captain. The messenger quickly shakes off his sleep runs from the room with your note.";
       note.EffectOnPlayer = PlayerStatus.playing;
       note.EffectOnOtherItem = null;
       note.InUse = false;
@@ -430,7 +434,7 @@ namespace grimtol_checkpoint.Models
       messengerOvercoat.Useable = true;
       messengerOvercoat.UseLocation = this.Rooms["Dungeon"]; // Used to disguise the freed prisoner
       messengerOvercoat.Locked = false;
-      messengerOvercoat.UseDescription = "You hand of the clothes and the old man puts them on. With this disguise I'll be able to walk out of this place tomorrow. Thank you.";
+      messengerOvercoat.UseDescription = "You hand off the clothes and the old man puts them on. With this disguise I'll be able to walk out of this place tomorrow. Thank you.";
       messengerOvercoat.EffectOnPlayer = PlayerStatus.playing;
       messengerOvercoat.EffectOnOtherItem = null;
       messengerOvercoat.InUse = false;
@@ -467,6 +471,56 @@ namespace grimtol_checkpoint.Models
       throneRoomDoor.EffectOnOtherItem = null;
       throneRoomDoor.InUse = false;
       return throneRoomDoor;
+    }
+
+    public Event SetupCourtyardEvt1()
+    {
+      Event courtyardEvt1 = new Event();
+      courtyardEvt1.Description = "Oi, long night tonight I wish I was in my bed. If your just getting on shift your should go talk to the captain.";
+      courtyardEvt1.RequiredItemName = "Guard Uniform";
+      courtyardEvt1.ForbiddenItemName = null;
+      courtyardEvt1.Effect = PlayerStatus.playing;
+      return courtyardEvt1;
+    }
+
+    public Event SetupCourtyardEvt2()
+    {
+      Event courtyardEvt2 = new Event();
+      courtyardEvt2.Description = "To your left you see a guard approaching you. (GUARD) 'Wat? Who the blazes are you?' Quickly he raises the alarm and several of the crossbow men turn and fire on you. You realize you have made a grave mistake as a bolt slams into your body...";
+      courtyardEvt2.RequiredItemName = null;
+      courtyardEvt2.ForbiddenItemName = "Guard Uniform";
+      courtyardEvt2.Effect = PlayerStatus.lost;
+      return courtyardEvt2;
+    }
+
+    public Event SetupCaptQuartEvt1()
+    {
+      Event captQuartEvt1 = new Event();
+      captQuartEvt1.Description = "The captain on shift greets you (CAPTAIN) 'New recruit huh. Well lets stick you in the guard room you can't screw things up there. Go relieve (He pauses and glancing at his reports) 'private Miyamoto.";
+      captQuartEvt1.RequiredItemName = "Broken Lock";
+      captQuartEvt1.ForbiddenItemName = null;
+      captQuartEvt1.Effect = PlayerStatus.playing;
+      return captQuartEvt1;
+    }
+
+    public Event SetupCaptQuartEvt2()
+    {
+      Event captQuartEvt2 = new Event();
+      captQuartEvt2.Description = "(CAPTAIN) What are you doing here? Go stay in the Guard Room.";
+      captQuartEvt2.RequiredItemName = null;
+      captQuartEvt2.ForbiddenItemName = "Broken Lock";
+      captQuartEvt2.Effect = PlayerStatus.playing;
+      return captQuartEvt2;
+    }
+
+    public Event SetupDungeonEvt1()
+    {
+      Event dungeonEvt1 = new Event();
+      dungeonEvt1.Description = "You also notice a man sitting in shackles. As you approach him you notice a small lock binding him to the wall with chains. As you near the prisoner his face turns to a deep frown.... (PRISONER) You look familiar, Hey thats right I know you from the village. Have you seriously turned your back on us and joined this squad of goons, He sighs defeated...";
+      dungeonEvt1.RequiredItemName = null;
+      dungeonEvt1.ForbiddenItemName = null;
+      dungeonEvt1.Effect = PlayerStatus.playing;
+      return dungeonEvt1;
     }
 
   }
