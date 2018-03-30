@@ -34,6 +34,10 @@ namespace grimtol_checkpoint.Models
             return true; // The event should fire
           }
         }
+        else // Otherwise, if no item is either required or forbidden for this event (e.g. the event should always fire)
+        {
+          return true; // The event should fire
+        }
       }
 
       return false; // Otherwise, the event should not fire

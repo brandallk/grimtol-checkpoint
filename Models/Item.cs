@@ -16,5 +16,10 @@ namespace grimtol_checkpoint.Models
     public PlayerStatus EffectOnPlayer { get; set; } // Effect of using this item on player's status (e.g. playing, lost, won)
     public Dictionary<Item, bool> EffectOnOtherItem { get; set; } // The name of the item effected and the bool value of the effect on that item's 'locked' state
     public bool InUse { get; set; } // Whether or not the item is being 'used' by the player
+
+    public Item()
+    {
+      Locked = false;
+    }
   }
 }
