@@ -11,12 +11,14 @@ namespace grimtol_checkpoint.Models
     public PlayerStatus Status { get; set; }
 
     public List<Item> Inventory { get; set; }
+    public List<Room> VisitedRooms { get; set; }
 
     public Player()
     {
       Score = 0;
       Status = PlayerStatus.playing;
       Inventory = new List<Item>();
+      VisitedRooms = new List<Room>();
     }
 
     public void Take(Item item)

@@ -119,7 +119,7 @@ namespace grimtol_checkpoint.Models
     public void TakeTurn()
     {
       // DEBUG --
-      Console.WriteLine($"    this.CurrentRoom.Name: {this.CurrentRoom.Name}");
+      // Console.WriteLine($"    this.CurrentRoom.Name: {this.CurrentRoom.Name}");
 
       if (this.CurrentRoom.Events != null && this.CurrentRoom.Events.Count > 0)
       {
@@ -163,6 +163,7 @@ namespace grimtol_checkpoint.Models
             {
               validOption = true;
               this.CurrentRoom = this.CurrentRoom.Exits[direction];
+              Console.WriteLine($"\n[[ You have entered the {CurrentRoom.Name}. Type 'look', 'inventory', or 'help' for more options. ]]\n");
             }
             else
             {
@@ -212,6 +213,22 @@ namespace grimtol_checkpoint.Models
         {
           Console.WriteLine("That option is invalid. Try again.");
         }
+
+        if (!CurrentPlayer.VisitedRooms.Contains(CurrentRoom))
+        {
+          CurrentPlayer.VisitedRooms.Add(CurrentRoom);
+        }
+        else
+        {
+          if (this.CurrentRoom.Events != null && this.CurrentRoom.Events.Count > 0)
+          {
+            foreach (Event evt in CurrentRoom.Events)
+            {
+              evt.Deactivated = true;
+            }
+          }
+        }
+
       }
     }
 
@@ -241,7 +258,7 @@ namespace grimtol_checkpoint.Models
       Event courtyardEvt1 = new Event();
       Event courtyardEvt2 = new Event();
       Event captQuartEvt1 = new Event();
-      Event captQuartEvt2 = new Event();
+      // Event captQuartEvt2 = new Event();
       Event dungeonEvt1 = new Event();
       Event throneRoomEvt1 = new Event();
 
@@ -272,7 +289,7 @@ namespace grimtol_checkpoint.Models
       courtyardEvt1 = SetupCourtyardEvt1(courtyardEvt1);
       courtyardEvt2 = SetupCourtyardEvt2(courtyardEvt2);
       captQuartEvt1 = SetupCaptQuartEvt1(captQuartEvt1);
-      captQuartEvt2 = SetupCaptQuartEvt2(captQuartEvt2);
+      // captQuartEvt2 = SetupCaptQuartEvt2(captQuartEvt2);
       dungeonEvt1 = SetupDungeonEvt1(dungeonEvt1);
       throneRoomEvt1 = SetupThroneRoomEvt1(throneRoomEvt1);
 
@@ -286,7 +303,8 @@ namespace grimtol_checkpoint.Models
 
       captainsQuarters = SetupCaptainsQuarters(captainsQuarters);
       captainsQuarters.Items = new List<Item>() { throneRoomKey, note, vial };
-      captainsQuarters.Events = new List<Event>() { captQuartEvt1, captQuartEvt2 };
+      captainsQuarters.Events = new List<Event>() { captQuartEvt1 };
+      // captainsQuarters.Events = new List<Event>() { captQuartEvt1, captQuartEvt2 };
       captainsQuarters.Exits = new Dictionary<string, Room>() { { "east, then north", castleCourtyard }, { "east", guardRoom } };
 
       castleCourtyard = SetupCastleCourtyard(castleCourtyard);
@@ -305,7 +323,7 @@ namespace grimtol_checkpoint.Models
 
       squireTower = SetupSquireTower(squireTower);
       squireTower.Items = new List<Item>() { messengerOvercoat };
-      squireTower.Exits = new Dictionary<string, Room>() { { "west, then south", castleCourtyard }, { "west, then north", throneRoom } };
+      squireTower.Exits = new Dictionary<string, Room>() { { "west, then south", castleCourtyard }, { "west, then north", throneRoom }, { "north", warRoom } };
 
       warRoom = SetupWarRoom(warRoom);
       warRoom.Items = new List<Item>() { window };
@@ -595,20 +613,20 @@ namespace grimtol_checkpoint.Models
     public Event SetupCaptQuartEvt1(Event captQuartEvt1)
     {
       captQuartEvt1.Description = "The captain on shift greets you (CAPTAIN) 'New recruit huh. Well lets stick you in the guard room you can't screw things up there. Go relieve (He pauses and glancing at his reports) 'private Miyamoto.";
-      captQuartEvt1.RequiredItemName = "Broken Lock";
+      captQuartEvt1.RequiredItemName = null;
       captQuartEvt1.ForbiddenItemName = null;
       captQuartEvt1.Effect = PlayerStatus.playing;
       return captQuartEvt1;
     }
 
-    public Event SetupCaptQuartEvt2(Event captQuartEvt2)
-    {
-      captQuartEvt2.Description = "(CAPTAIN) What are you doing here? Go stay in the Guard Room.";
-      captQuartEvt2.RequiredItemName = null;
-      captQuartEvt2.ForbiddenItemName = "Broken Lock";
-      captQuartEvt2.Effect = PlayerStatus.playing;
-      return captQuartEvt2;
-    }
+    // public Event SetupCaptQuartEvt2(Event captQuartEvt2)
+    // {
+    //   captQuartEvt2.Description = "(CAPTAIN) What are you doing here? Go stay in the Guard Room.";
+    //   captQuartEvt2.RequiredItemName = null;
+    //   captQuartEvt2.ForbiddenItemName = "Dungeon Lock";
+    //   captQuartEvt2.Effect = PlayerStatus.playing;
+    //   return captQuartEvt2;
+    // }
 
     public Event SetupDungeonEvt1(Event dungeonEvt1)
     {

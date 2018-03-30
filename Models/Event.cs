@@ -10,11 +10,22 @@ namespace grimtol_checkpoint.Models
     public string Description { get; set; }
     public string RequiredItemName { get; set; } // Name of an item that is required to be in use for this event to fire
     public string ForbiddenItemName { get; set; } // Name of an item that cannot be in use for this event to fire
+    public bool Deactivated { get; set; }
     public PlayerStatus Effect { get; set; }
+
+    public Event()
+    {
+      Effect = PlayerStatus.playing;
+      Deactivated = false;
+    }
 
     // Determine if the given room-event should fire or not, depending on the in-use items in the player's inventory
     public bool ShouldFire(Player player)
     {
+      if (Deactivated == true)
+          {
+            return false;
+          }
       if (RequiredItemName != null) // If an item is required for this event to happen
       {
         if (player.Inventory.Find(item => item.Name == RequiredItemName) != null // If that item is found in player's inventory...
@@ -34,9 +45,12 @@ namespace grimtol_checkpoint.Models
             return true; // The event should fire
           }
         }
-        else // Otherwise, if no item is either required or forbidden for this event (e.g. the event should always fire)
+        else // Otherwise, if no item is either required or forbidden for this event (e.g. the event should always fire unless it is deactivated)
         {
-          return true; // The event should fire
+          if (Deactivated == false)
+          {
+            return true; // The event should fire
+          }
         }
       }
 
