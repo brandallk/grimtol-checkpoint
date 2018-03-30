@@ -12,6 +12,7 @@ namespace grimtol_checkpoint.Models
 
     public List<Item> Inventory { get; set; }
     public List<Room> VisitedRooms { get; set; }
+    public VictoryConditions PlayerVictoryConditions { get; set; }
 
     public Player()
     {
@@ -19,6 +20,7 @@ namespace grimtol_checkpoint.Models
       Status = PlayerStatus.playing;
       Inventory = new List<Item>();
       VisitedRooms = new List<Room>();
+      PlayerVictoryConditions = VictoryConditions.none;
     }
 
     public void Take(Item item)

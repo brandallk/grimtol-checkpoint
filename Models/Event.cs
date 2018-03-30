@@ -47,6 +47,7 @@ namespace grimtol_checkpoint.Models
         }
         else // Otherwise, if no item is either required or forbidden for this event (e.g. the event should always fire unless it is deactivated)
         {
+          // DEBUG -- This condition is probably not needed:
           if (Deactivated == false)
           {
             return true; // The event should fire
