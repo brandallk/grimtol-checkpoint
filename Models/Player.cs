@@ -8,11 +8,11 @@ namespace grimtol_checkpoint.Models
   public class Player : IPlayer
   {
     public int Score { get; set; }
-    public PlayerStatus Status { get; set; }
+    public PlayerStatus Status { get; set; } // Keep track of whether the player is still viably 'playing', has 'lost', has 'won'...
 
-    public List<Item> Inventory { get; set; }
-    public List<Room> VisitedRooms { get; set; }
-    public VictoryConditions PlayerVictoryConditions { get; set; }
+    public List<Item> Inventory { get; set; } // A list of items the player has 'taken'
+    public List<Room> VisitedRooms { get; set; } // Keep track of the rooms the player has visited
+    public VictoryConditions PlayerVictoryConditions { get; set; } // Keep track of which of two alternative win conditions (if any) the player has met
 
     public Player()
     {
@@ -23,11 +23,12 @@ namespace grimtol_checkpoint.Models
       PlayerVictoryConditions = VictoryConditions.none;
     }
 
+    // Add an item to the player's inventory
     public void Take(Item item)
     {
       if (item.Takeable && item.Locked == false) // Can't 'take' and item unless it's 'takeable' and not 'locked'
       {
-        this.Inventory.Add(item);
+        Inventory.Add(item);
       }
       else
       {
@@ -37,10 +38,10 @@ namespace grimtol_checkpoint.Models
 
     public void PrintInventory()
     {
-      if (this.Inventory.Count > 0)
+      if (Inventory.Count > 0)
       {
         string inventory = "";
-        foreach (Item item in this.Inventory)
+        foreach (Item item in Inventory)
         {
           inventory += item.Name + "   ";
         }

@@ -14,7 +14,7 @@ namespace grimtol_checkpoint.Models
     public string UseDescription { get; set; } // Describes what happens when the item is used
     public bool Locked { get; set; } // TRUE if the item must be unlocked before it's used
     public PlayerStatus EffectOnPlayer { get; set; } // Effect of using this item on player's status (e.g. playing, lost, won)
-    public VictoryConditions EffectOnVicConds { get; set; }
+    public VictoryConditions EffectOnVicConds { get; set; } // Allow the item's use to affect which of two alternative win conditions (if any) the player has met
     public Dictionary<Item, bool> EffectOnOtherItem { get; set; } // The name of the item effected and the bool value of the effect on that item's 'locked' state
     public bool InUse { get; set; } // Whether or not the item is being 'used' by the player
 

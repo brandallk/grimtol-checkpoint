@@ -10,8 +10,8 @@ namespace grimtol_checkpoint.Models
     public string Description { get; set; }
     public string RequiredItemName { get; set; } // Name of an item that is required to be in use for this event to fire
     public string ForbiddenItemName { get; set; } // Name of an item that cannot be in use for this event to fire
-    public bool Deactivated { get; set; }
-    public PlayerStatus Effect { get; set; }
+    public bool Deactivated { get; set; } // Allow the event to be deactivated
+    public PlayerStatus Effect { get; set; } // Allow the event to affect the player status (i.e. 'won'/'lost' the game)
 
     public Event()
     {
@@ -47,7 +47,7 @@ namespace grimtol_checkpoint.Models
         }
         else // Otherwise, if no item is either required or forbidden for this event (e.g. the event should always fire unless it is deactivated)
         {
-          // DEBUG -- This condition is probably not needed:
+          // DEBUG -- This condition is not needed:
           if (Deactivated == false)
           {
             return true; // The event should fire

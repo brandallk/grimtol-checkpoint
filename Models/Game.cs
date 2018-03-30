@@ -7,19 +7,21 @@ namespace grimtol_checkpoint.Models
 {
   public class Game : IGame
   {
-    private Dictionary<string, Room> Rooms;
+    private Dictionary<string, Room> Rooms; // The collection of rooms belonging to the game.
     public Room CurrentRoom { get; set; }
     public Player CurrentPlayer { get; set; }
 
-    public void Reset()
+    public void Reset() // Start or restart the game
     {
-      Setup();
+      Setup(); // Do basic game setup
 
+      // Continue taking turns as long as the player's status remains 'playing'
       while (CurrentPlayer.Status == PlayerStatus.playing)
       {
         TakeTurn();
       }
 
+      // Handle the end of a game if it has been lost or won.
       if (CurrentPlayer.Status == PlayerStatus.lost)
       {
         Console.WriteLine("\nYou have died, the rebellion has failed.");
@@ -28,14 +30,17 @@ namespace grimtol_checkpoint.Models
       {
         if (CurrentPlayer.PlayerVictoryConditions == VictoryConditions.rulerKilled)
         {
+          // Win the game via poisoning the ruler
           Console.WriteLine("\nYou succeeded where so many others failed. The Dark Lords' reign of terror is over.");
         }
         else if (CurrentPlayer.PlayerVictoryConditions == VictoryConditions.prisonerFreed)
         {
+          // Win the game via freeing the prisoner
           Console.WriteLine("\nYou freed an old man held captive! The Dark Lord's rule continues, but you can try to assassinate him again some other night.");
         }
       }
 
+      // Allow player to play again
       Console.WriteLine("\nPlay again?");
       string response = Console.ReadLine();
       if (response.ToLower() == "y" || response.ToLower() == "yes")
@@ -48,23 +53,25 @@ namespace grimtol_checkpoint.Models
       }
     }
 
-    public void Setup()
+    public void Setup() // Instantiate player & rooms, and show initial game-text
     {
       CurrentPlayer = new Player();
       Rooms = SetupRooms();
       CurrentRoom = Rooms["Hallway"];
       Console.Clear();
-      Console.WriteLine("Welcome to the 'Castle Grimtol' console game. This is a somewhat modified version of Jake's stock-plot game from the assignment's original repo.\n");
+      Console.WriteLine("Welcome to the 'Castle Grimtol' console game. This is a modified version of Jake's stock-plot game from the assignment's original repo.\n");
       Console.WriteLine("The evil ruler of Castle Grimtol has imposed a reign of terror on the surrounding lands. You, a rebel from a nearby village, have sneaked into the castle with two goals in mind: 1) Find and free an old man from your village who was recently taken captive by the evil ruler. 2) End the reign of terror by killing the ruler and his council.\n");
       Console.WriteLine("At each stage in the game, you can type the following commands:\n'help' prints a list of commands available to you at the current time.\n'look' (re)prints the description of the room you're currently in.\n'go <direction>' takes you through one of the current room's exits into a neighboring room. (Your exit options can always be found by typing 'help'.)\n'take <item>' allows you to place a found item in your player inventory\n'inventory' prints a list of items currently in your possession.\n'use <item>' allows you to use an item -- either a found item or an item carried in your inventory.\n'quit' ends the game.");
-      Console.WriteLine("\n\nFOR GRADING:\nSample 1st way to die: 'go east' at first step.\n\nSample 2nd way to die: 'go north', 'take guard uniform', 'use guard uniform', 'go south', 'go east', 'go south, then east', 'take hammer', 'go north', 'use hammer', 'take dungeon lock', 'go south', 'go west', 'use dungeon lock', 'take throne room key', 'go east, then north', 'use throne room key', 'go north'.\n\n1st way to win: 'go north', 'take guard uniform', 'use guard uniform', 'go south', 'go east', 'go south, then east', 'take hammer', 'go north', 'use hammer', 'take dungeon lock', 'go south', 'go west, then north', 'go north, then east', 'take messenger overcoat', 'go west, then south', 'go south, then east', 'go north', 'use messenger overcoat'.\n\n2nd way to win: 'go north', 'take guard uniform', 'use guard uniform', 'go south', 'go east', 'go south, then east', 'take hammer', 'go north', 'use hammer', 'take dungeon lock', 'go south', 'go west', 'use dungeon lock', 'take via', 'go east, then north', 'go north, then east', 'go north', 'use vial'.\n\n");
+      Console.WriteLine("\n\nFOR GRADING:\nSample 1st way to die: 'go east' at first step.\n\nSample 2nd way to die: 'go north', 'take guard uniform', 'use guard uniform', 'go south', 'go east', 'go south, then east', 'take hammer', 'go north', 'use hammer', 'take dungeon lock', 'go south', 'go west', 'use dungeon lock', 'take throne room key', 'go east, then north', 'use throne room key', 'go north'.\n\nThe original stock-plot was modified to allow for 2 mutually-exclusive, alternative ways to win:\n\n1st way to win: 'go north', 'take guard uniform', 'use guard uniform', 'go south', 'go east', 'go south, then east', 'take hammer', 'go north', 'use hammer', 'take dungeon lock', 'go south', 'go west, then north', 'go north, then east', 'take messenger overcoat', 'go west, then south', 'go south, then east', 'go north', 'use messenger overcoat'.\n\n2nd way to win: 'go north', 'take guard uniform', 'use guard uniform', 'go south', 'go east', 'go south, then east', 'take hammer', 'go north', 'use hammer', 'take dungeon lock', 'go south', 'go west', 'use dungeon lock', 'take via', 'go east, then north', 'go north, then east', 'go north', 'use vial'.\n\n ");
       Console.WriteLine("Good luck!\n");
     }
 
-    public void UseItem(string itemName)
+    public void UseItem(string itemName) // Handle a player's 'use' of an item
     {
-      Item foundItem = this.CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
-      Item inventoryItem = this.CurrentPlayer.Inventory.Find(invItem => invItem.Name.ToLower() == itemName);
+      // If the item is NOT an item in the player's inventory, get the item (otherwise this will be NULL)
+      Item foundItem = CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
+      // If the item IS an item in the player's inventory, get the item (otherwise this will be NULL)
+      Item inventoryItem = CurrentPlayer.Inventory.Find(invItem => invItem.Name.ToLower() == itemName);
 
       // To use an item found in a room (without taking it first), it must not be takeable, it must be useable in the current room, and it can't have 'locked' = TRUE
       if (foundItem != null && foundItem.Useable)
@@ -72,15 +79,15 @@ namespace grimtol_checkpoint.Models
         if (!foundItem.Takeable && foundItem.Locked == false
             && (foundItem.UseLocation == null || foundItem.UseLocation == CurrentRoom))
         {
-          Console.WriteLine(foundItem.UseDescription);
-          CurrentPlayer.Status = foundItem.EffectOnPlayer;
-          CurrentPlayer.PlayerVictoryConditions = foundItem.EffectOnVicConds;
+          Console.WriteLine(foundItem.UseDescription); // Print the paragraph associated with the item's use
+          CurrentPlayer.Status = foundItem.EffectOnPlayer; // If using this item causes the player's status to change to 'won' or 'lost', record that change
+          CurrentPlayer.PlayerVictoryConditions = foundItem.EffectOnVicConds; // Record any changes to the player's victory conditions associated with this item's use
           foundItem.InUse = true;
           if (foundItem.EffectOnOtherItem != null) // Account for this item's effect on another item (if any)
           {
             foreach (KeyValuePair<Item, bool> item in foundItem.EffectOnOtherItem)
             {
-              item.Key.Locked = item.Value;
+              item.Key.Locked = item.Value; // The effect (if any) will be to lock or unlock another item
             }
           }
         }
@@ -94,15 +101,15 @@ namespace grimtol_checkpoint.Models
       {
         if ((inventoryItem.UseLocation == null || inventoryItem.UseLocation == CurrentRoom) && inventoryItem.Locked == false)
         {
-          Console.WriteLine(inventoryItem.UseDescription);
-          CurrentPlayer.Status = inventoryItem.EffectOnPlayer;
-          CurrentPlayer.PlayerVictoryConditions = inventoryItem.EffectOnVicConds;
+          Console.WriteLine(inventoryItem.UseDescription); // Print the paragraph associated with the item's use
+          CurrentPlayer.Status = inventoryItem.EffectOnPlayer; // If using this item causes the player's status to change to 'won' or 'lost', record that change
+          CurrentPlayer.PlayerVictoryConditions = inventoryItem.EffectOnVicConds; // Record any changes to the player's victory conditions associated with this item's use
           inventoryItem.InUse = true;
           if (inventoryItem.EffectOnOtherItem != null) // Account for this item's effect on another item (if any)
           {
             foreach (KeyValuePair<Item, bool> item in inventoryItem.EffectOnOtherItem)
             {
-              item.Key.Locked = item.Value;
+              item.Key.Locked = item.Value; // The effect (if any) will be to lock or unlock another item
             }
           }
         }
@@ -113,14 +120,14 @@ namespace grimtol_checkpoint.Models
       }
     }
 
-    public void PrintOptions()
+    public void PrintOptions() // Print to the console a list of commands available to the user at the current time
     {
       string options = "'help'   'quit'   'look'   'inventory'   ";
-      foreach (KeyValuePair<string, Room> exitDirection in this.CurrentRoom.Exits)
+      foreach (KeyValuePair<string, Room> exitDirection in CurrentRoom.Exits) // List the directions in which the player can 'go'
       {
         options += "'go " + exitDirection.Key + "'   ";
       }
-      foreach (Item item in this.CurrentRoom.Items)
+      foreach (Item item in CurrentRoom.Items) // List the items that can be 'taken'
       {
         // If the item must be taken to be used:
         if (item.Takeable && CurrentPlayer.Inventory.Find(itm => itm.Name == item.Name) == null) // (Don't include items that have already been 'taken')
@@ -128,64 +135,74 @@ namespace grimtol_checkpoint.Models
           options += "'take " + item.Name + "'   ";
         }
         // If the item does not need to be taken to be used:
-        if (item.Useable)
+        if (item.Useable) // List the items found in the current room that can be 'used'
         {
           options += "'use " + item.Name + "'   ";
         }
       }
-      foreach (Item item in this.CurrentPlayer.Inventory)
+      foreach (Item item in CurrentPlayer.Inventory) // List the items in the player's inventory that can be 'used'
       {
         options += "'use " + item.Name + "'   ";
       }
-      Console.WriteLine($"Type one of the following commands: {options}");
+      Console.WriteLine($"Your options include the following: {options}");
     }
 
-    public void TakeTurn()
+    public void TakeTurn() // Handle a game-play 'turn'
     {
-      if (this.CurrentRoom.Events != null && this.CurrentRoom.Events.Count > 0)
+      // Launch any events that should occur
+      if (CurrentRoom.Events != null && CurrentRoom.Events.Count > 0) // Check to see if this room has associated event(s)
       {
-        foreach (Event evt in this.CurrentRoom.Events)
+        foreach (Event evt in CurrentRoom.Events)
         {
-          if (evt.ShouldFire(this.CurrentPlayer))
+          if (evt.ShouldFire(CurrentPlayer)) // Check to make sure this event should be allowed to fire
           {
-            Console.WriteLine(evt.Description);
-            this.CurrentPlayer.Status = evt.Effect;
+            Console.WriteLine(evt.Description); // Print out the paragraph associated with this event
+            CurrentPlayer.Status = evt.Effect; // Record any change to the player's status ('won'/'lost') associated with the event
           }
         }
       }
 
+      // Turn 'loop'
       bool validOption = false;
-      while (!validOption && this.CurrentPlayer.Status == PlayerStatus.playing)
+      while (!validOption && CurrentPlayer.Status == PlayerStatus.playing) // Continue looping until user gives a valid command or the player wins/loses the game
       {
         Console.WriteLine("What do you do now?");
 
         string action = Console.ReadLine();
+
+        // Respond to 'help' command
         if (action.ToLower() == "help")
         {
-          this.PrintOptions();
+          PrintOptions();
         }
+
+        // Respond to 'quit' command
         else if (action.ToLower() == "quit")
         {
           validOption = true;
-          this.CurrentPlayer.Status = PlayerStatus.quit;
+          CurrentPlayer.Status = PlayerStatus.quit;
         }
+
+        // Respond to 'inventory' command
         else if (action.ToLower() == "inventory")
         {
           validOption = true;
-          this.CurrentPlayer.PrintInventory();
+          CurrentPlayer.PrintInventory();
         }
+
+        // Respond to 'go <direction>' command
         else if (action.Length >= 4 && action.ToLower().Substring(0, 3) == "go ")
         {
-          string direction = action.ToLower().Substring(3);
-          if (this.CurrentRoom.Exit(direction))
+          string direction = action.ToLower().Substring(3); // Read the direction-name string
+          if (CurrentRoom.Exit(direction)) // Make sure the given direction corresponds to one of this room's exit directions
           {
-            Room nextRoom = this.CurrentRoom.Exits[direction];
-            if (!nextRoom.Door.Locked)
+            Room nextRoom = CurrentRoom.Exits[direction]; // The room corresponding to the given exit direction
+            if (!nextRoom.Door.Locked) // Make sure the door to the next room is not locked
             {
               validOption = true;
-              this.CurrentRoom = this.CurrentRoom.Exits[direction];
-              Console.WriteLine($"\n[[ {CurrentRoom.Name} ]]\n");
-              Console.WriteLine(CurrentRoom.Description);
+              CurrentRoom = CurrentRoom.Exits[direction]; // Go to the desired room
+              Console.WriteLine($"\n[[ {CurrentRoom.Name} ]]\n"); // Print a hint showing the name of the room just entered
+              Console.WriteLine(CurrentRoom.Description); // Print the room's description
             }
             else
             {
@@ -197,63 +214,72 @@ namespace grimtol_checkpoint.Models
             Console.WriteLine("That option is invalid. Try again.");
           }
         }
+
+        // Respond to 'look' command
         else if (action.ToLower() == "look")
         {
-          this.CurrentRoom.PrintDescription();
+          CurrentRoom.PrintDescription();
         }
+
+        // Respond to 'take <item>' command
         else if (action.Length >= 6 && action.ToLower().Substring(0, 5) == "take ")
         {
-          string itemName = action.ToLower().Substring(5);
-          Item item = this.CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
-          if (item != null)
+          string itemName = action.ToLower().Substring(5); // Get the item-name string
+          Item item = CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName); // Get the item
+          if (item != null) // Make sure the item exists
           {
             validOption = true;
-            this.CurrentPlayer.Take(item);
+            CurrentPlayer.Take(item); // Put the item in the player's inventory
           }
           else
           {
             Console.WriteLine("That option is invalid. Try again.");
           }
         }
+
+        // Respond to a 'use <item>' command
         else if (action.Length >= 5 && action.ToLower().Substring(0, 4) == "use ")
         {
-          string itemName = action.ToLower().Substring(4);
+          string itemName = action.ToLower().Substring(4); // Get the action-name string
 
-          Item foundItem = this.CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName);
-          Item inventoryItem = this.CurrentPlayer.Inventory.Find(invItem => invItem.Name.ToLower() == itemName);
-          if (foundItem != null || inventoryItem != null)
+          Item foundItem = CurrentRoom.Items.Find(roomItem => roomItem.Name.ToLower() == itemName); // Get the item if it's an item found in the current room (or null)
+          Item inventoryItem = CurrentPlayer.Inventory.Find(invItem => invItem.Name.ToLower() == itemName); // Get the item if it's an item in the player's inventory (or null)
+          if (foundItem != null || inventoryItem != null) // Make sure the item exists
           {
             validOption = true;
-            this.UseItem(itemName);
+            UseItem(itemName); // Handle the effect(s) of 'using' the item
           }
           else
           {
             Console.WriteLine("That option is invalid. Try again.");
           }
         }
+
+        // Respond to any invalid command not already caught
         else
         {
           Console.WriteLine("That option is invalid. Try again.");
         }
 
+        // Keep track of which rooms the player has already visited.
         if (!CurrentPlayer.VisitedRooms.Contains(CurrentRoom))
         {
           CurrentPlayer.VisitedRooms.Add(CurrentRoom);
         }
         else
         {
-          if (this.CurrentRoom.Events != null && this.CurrentRoom.Events.Count > 0)
+          if (CurrentRoom.Events != null && CurrentRoom.Events.Count > 0)
           {
             foreach (Event evt in CurrentRoom.Events)
             {
-              evt.Deactivated = true;
+              evt.Deactivated = true; // Deactivate default events for any room a player has already visited
             }
           }
         }
-
       }
     }
 
+    // Instantiate the game's rooms, along with each one's associated items and events
     public Dictionary<string, Room> SetupRooms()
     {
       // CREATE CLASS INSTANCES

@@ -9,10 +9,8 @@ namespace grimtol_checkpoint
   {
     static void Main(string[] args)
     {
-
       Game game = new Game();
-      game.Reset();
-
+      game.Reset(); // Start or re-start the game
     }
   }
 }
